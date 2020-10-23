@@ -1,0 +1,8 @@
+How to add audio and use it inside your scripts:
+1. Add audiofile (preferably WAV) to Resource/Audio folder
+2. Add Enumeration name to AudioClipName.cs within Scripts/AudioManagement/
+3. Modify AudioManager.cs within Scripts/AudioManagement/ to include a new 
+resource load in the InitAudioClips method. You will have to include your AudioClipName 
+and the clip to load (filename of audiofile).
+4. Simply call AudioManager.Play(AudioClipName.<yourAudioClipName>, <Volumeasafloat>) 
+method within your script. See Health.cs for an example.
