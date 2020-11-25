@@ -11,22 +11,8 @@ namespace EGS
 /// invoked by PlayerInput, this script must be placed on the same GameObject
 /// holding the PlayerInput component.
 /// </summary>
-public class PlayerController : MonoBehaviour
+public class PlayerController : ACombativeEntity
 {
-    //=========================================================================
-    #region Notes
-    //=========================================================================
-    /*
-        Movement in unity can be done using Rigidbody, Translation, or 
-        CharacterController. Translation/character controller are better used
-        for controlling objects not impacted by physics. Since physics are 
-        being used, Rigidbody will be used for player movement.
-        Rigidbody vs Translation: https://www.youtube.com/watch?v=ixM2W2tPn6c
-        Rigidbody vs CharacterController: 
-        https://www.youtube.com/watch?v=AEPI5rmg3XY
-    */
-    #endregion
-
     //=========================================================================
     #region Instance variables
     //=========================================================================
@@ -34,11 +20,11 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// The speed at which the player moves.
     /// </summary>
-    [SerializeField] private float _moveSpeed = 7.0f;
+    [SerializeField] private float _moveSpeed = 350f;
     /// <summary>
     /// The magnitude of the impulse used to jump the player.
     /// </summary>
-    [SerializeField] private float _jumpMagnitude = 280.0f;
+    [SerializeField] private float _jumpMagnitude = 280f;
 
     //=========================================================================
     // [Header("Inputs and directions")]
@@ -146,10 +132,6 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private PlayerInput _playerInput;
     /// <summary>
-    /// The Ridigbody used to move and induce physics on the player.
-    /// </summary>
-    private Rigidbody _rigidbody;
-    /// <summary>
     /// The SphereCaster used to perform spherecasting.
     /// </summary>
     private SphereCaster _sphereCaster;
@@ -226,7 +208,14 @@ public class PlayerController : MonoBehaviour
     public bool FreezeMovement
     {
         get { return _freezeMovement; }
-        set { _freezeMovement = value; }
+        set 
+        { 
+            if (value != _freezeMovement)
+            {
+                if (value) { ZeroPlayerVelocity(); }
+                _freezeMovement = value; 
+            }
+        }
     }
 
     /// <summary>
@@ -286,28 +275,21 @@ public class PlayerController : MonoBehaviour
     #region MonoBehaviour
     //=========================================================================
     /// <summary>
-    /// Called before the first frame update.
-    /// </summary>
-    private void Start()
-    {
-        InitOnStart();
-    }
-
-    /// <summary>
     /// Called once per frame.
     /// </summary>
     private void Update()
     {
         UpdateAnimatorVariables();
+        AdjustFacingDirection();
     }
 
     /// <summary>
     /// Called every physics update.
     /// </summary>
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
+        base.FixedUpdate();
         MovePlayer();
-        AdjustFacingDirection();
         AdjustJumpingGravity();
     }
 
@@ -354,7 +336,7 @@ public class PlayerController : MonoBehaviour
     private void OnPreviousWeapon() { DecrementWeaponIndex(); }
     
     /// <summary>Called when InputSystem detects Jump action.</summary>
-    private void OnJump() { Jump(); }
+    private void OnJump() { JumpPlayer(); }
 
     /// <summary>Called when InputSystem detects Aim action.</summary>
     private void OnAim() { ToggleAim(); }
@@ -399,29 +381,21 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    //=========================================================================
-    #region Private methods
-    //=========================================================================
-    /// <summary>
-    /// Initialises the component in Start().
-    /// </summary>
-    private void InitOnStart()
-    {
-        InitVars();
-        CheckMandatoryComponents();
-    }
 
+    //=========================================================================
+    #region Protected methods
+    //=========================================================================
     /// <summary>
     /// Sources and initializes component variables.
     /// </summary>
-    private void InitVars()
+    protected override void InitVars()
     {
+        base.InitVars();
         // Initialize GameObject components
         _animator = GetComponent<Animator>();
         _boxCollider = GetComponent<BoxCollider>();
         _lifter = GetComponent<Lifter>();
         _playerInput = GetComponent<PlayerInput>();
-        _rigidbody = GetComponent<Rigidbody>();
         _sphereCaster = GetComponent<SphereCaster>();
         // Initialize child components
         _carryRigidbodiesSensorGameObject = GetComponentInChildren<CarryRigidbodiesSensor>().gameObject;
@@ -435,7 +409,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// Ensures mandatory components are accounted for.
     /// </summary>
-    private void CheckMandatoryComponents()
+    protected override void CheckMandatoryComponents()
     {
         Assert.IsNotNull(_animator, gameObject.name + " is missing _animator");
         Assert.IsNotNull(_boxCollider, gameObject.name + " is missing _boxCollider");
@@ -443,12 +417,31 @@ public class PlayerController : MonoBehaviour
         Assert.IsNotNull(_crosshair, gameObject.name + " is missing _crosshair");
         Assert.IsNotNull(_lifter, gameObject.name + " is missing _lifter");
         Assert.IsNotNull(_playerInput, gameObject.name + " is missing _playerInput");
-        Assert.IsNotNull(_rigidbody, gameObject.name + " is missing _rigidbody");
         Assert.IsNotNull(_sphereCaster, gameObject.name + " is missing _sphereCaster");
         Assert.IsNotNull(_spriteRenderer, gameObject.name + " is missing _spriteRenderer");
         Assert.IsNotNull(_weaponSelector, gameObject.name + " is missing _weaponSelector");
     }
 
+    /// <summary>
+    /// Adds knockback effects.
+    /// </summary>
+    protected override void AddKnockbackEffects()
+    {
+        this.FreezeMovement = true;
+    }
+
+    /// <summary>
+    /// Removes knockback effects.
+    /// </summary>
+    protected override void RemoveKnockbackEffects()
+    {
+        this.FreezeMovement = false;
+    }
+    #endregion
+
+    //=========================================================================
+    #region Private methods
+    //=========================================================================
     /// <summary>
     /// Processes Move input such that the player moves with respect to the
     /// camera's current perspective. For example, when a player walks left, 
@@ -549,14 +542,21 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Jumps the player if they are grounded and not currently lifted, thrown,
-    /// or frozen.
+    /// Adds vertical impulse to the player causing them to jump.
     /// </summary>
-    private void Jump()
+    /// <remarks>
+    /// The player's velocity is reset before jumping so that they cannot spam 
+    /// the jump button and "multi-jump" to get a larger jumping impulse. It
+    /// also helps to prevent players from using FixedJoints as a spring to 
+    /// build up platforming momentum.
+    /// </remarks>
+    private void JumpPlayer()
     {
         if (!_lifter.IsLifted && !_lifter.IsThrown && !this.FreezeMovement && IsJumpableSurface())
         {
-            JumpPlayer();
+            rigidbody.velocity = new Vector3(0, 0, 0);
+            rigidbody.AddForce(Vector3.up * _jumpMagnitude, ForceMode.Impulse);
+            IsGrounded = false;
         }
     }
 
@@ -595,7 +595,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void SkipDialogueLine()
     {
-        DialogueManager.instance.ContinueDialogue();
+        DialogueCanvas.instance.ContinueDialogue();
     }
 
     /// <summary>
@@ -691,8 +691,8 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Moves player in input direction if they are not lifted, thrown, or 
-    /// frozen.
+    /// Moves player in input direction if they are not lifted, thrown, frozen,
+    /// or being knocked back.
     /// </summary>
     /// <remarks>
     /// Movement direction is not normalzied so that people using sticks can
@@ -702,25 +702,9 @@ public class PlayerController : MonoBehaviour
     {
         if (!_lifter.IsLifted && !_lifter.IsThrown && !FreezeMovement)
         {
-            Vector3 moveDirection = new Vector3(_moveInputDirection.x, 0, _moveInputDirection.y);
-            _rigidbody.MovePosition(transform.position + (moveDirection * _moveSpeed * Time.deltaTime));
+            Vector3 moveVelocity = new Vector3(_moveInputDirection.x, 0, _moveInputDirection.y) * _moveSpeed * Time.deltaTime;
+            rigidbody.velocity = new Vector3(moveVelocity.x, rigidbody.velocity.y, moveVelocity.z);
         }
-    }
-
-    /// <summary>
-    /// Adds vertical impulse to the player causing them to jump.
-    /// </summary>
-    /// <remarks>
-    /// The player's velocity is reset before jumping so that they cannot spam 
-    /// the jump button and "multi-jump" to get a larger jumping impulse. It
-    /// also helps to prevent players from using FixedJoints as a spring to 
-    /// build up platforming momentum.
-    /// </remarks>
-    private void JumpPlayer()
-    {
-        _rigidbody.velocity = new Vector3(0, 0, 0);
-        _rigidbody.AddForce(Vector3.up * _jumpMagnitude, ForceMode.Impulse);
-        IsGrounded = false;
     }
 
     /// <summary>
@@ -741,16 +725,16 @@ public class PlayerController : MonoBehaviour
         if (!_lifter.IsThrown)
         {
             // If player is falling...
-            if (_rigidbody.velocity.y < 0)
+            if (rigidbody.velocity.y < 0)
             {
                 // Increase player gravity by _fallMultiplier (i.e. increase fall speed)
-                _rigidbody.AddForce(Physics.gravity * _rigidbody.mass * _fallMultiplier);
+                rigidbody.AddForce(Physics.gravity * rigidbody.mass * _fallMultiplier);
             }
             // If player is jumping upward but the jump button is no longer held... 
-            else if (_rigidbody.velocity.y > 0 && _playerInput.actions["Jump"].ReadValue<float>() == 0)
+            else if (rigidbody.velocity.y > 0 && _playerInput.actions["Jump"].ReadValue<float>() == 0)
             {
                 // Increase player gravity by _prematureFallMultiplier (i.e. lower jump peak)
-                _rigidbody.AddForce(Physics.gravity * _rigidbody.mass * _prematureFallMultiplier);
+                rigidbody.AddForce(Physics.gravity * rigidbody.mass * _prematureFallMultiplier);
             }
         }
     }
@@ -849,6 +833,15 @@ public class PlayerController : MonoBehaviour
     {
         PlayerManager.instance.RevertPlayerControls(gameObject);
         _spriteRenderer.flipY = false;
+    }
+
+    /// <summary>
+    /// Zeros the player's velocity. To be called when horizontal movement is 
+    /// to be halted.
+    /// </summary>
+    private void ZeroPlayerVelocity()
+    {
+        rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
     }
     #endregion
 }

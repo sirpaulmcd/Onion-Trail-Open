@@ -43,7 +43,7 @@ public class WeaponSelector : MonoBehaviour
     {
         if (HasWeapon())
         {
-            transform.GetChild(_selectedWeaponIndex).GetComponent<IWeapon>().Attack(direction);
+            transform.GetChild(_selectedWeaponIndex).GetComponent<AWeapon>().Attack(direction);
         }
     }
 

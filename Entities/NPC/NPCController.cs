@@ -51,7 +51,7 @@ public class NPCController: MonoBehaviour, IInteractable, ISpeakable
     /// </summary>
     public void ActivateDialogue(GameObject interactor)
     {
-        DialogueManager.instance.ActivateDialogue(interactor, _dialoguePrefab);
+        DialogueCanvas.instance.ActivateDialogue(interactor, _dialoguePrefab);
     }
 
     //=========================================================================
