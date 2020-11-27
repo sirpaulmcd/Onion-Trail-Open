@@ -5,7 +5,7 @@ We are unable to post the entire Unity project due to the assets used in game. H
 Progress is made via agile development by a small team in their spare time. For more info, check out the [project wiki](https://github.com/sirpaulmcd/Elite-Gardening-Squad-Open/wiki).
 
 <p align="center">
-    <img src="https://cdn.discordapp.com/attachments/555041456994123791/769294338684616745/elite-gardener.png" />
+    <img src="https://drive.google.com/uc?export=view&id=1GaLC6hhl2YzEAVW8VAayTU1mcvflAZOB" />
 </p>
 
 ## Contributors (alphabetical)
