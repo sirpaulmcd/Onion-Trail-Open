@@ -1,3 +1,11 @@
-# Unnecessary file types
-*.meta
-*.asmdef
+# Ignore everything
+*
+
+# Except
+!.gitignore
+!*.cs
+!*.txt
+!*.md
+
+# Even if they are in subdirectories
+!*/

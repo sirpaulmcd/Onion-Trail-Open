@@ -1,0 +1,22 @@
+# How to use EventManager
+
+Creating an event:
+- Copy existing event script such as SpacePushedEvent.cs into new script
+- Find & replace event title to desired title
+- Modify event description and arguments as necessary
+
+Adding an event to the EventManager:
+- In EventManager script, add event in Init() method
+   - For example: _invokableEvents.Add(EventName.SpacePressedEvent, SpacePressedEvent.GetEventHandler());
+- Add event name to EventName enum at bottom of EventManager script
+
+Invoking an event (see Producer.cs for example):
+- In invoker script, use `EventManager.Instance.Invoke(EventName, EventArgs, Invoker)`
+
+Listening to an event (see Consumer.cs for example):
+- Create a method that will handle the event when invoked
+    - For example: HandleSpacePressedEvent(object invoker, System.EventArgs e);
+- In OnEnable(), subscribe to event
+    - For example: EventManager.Instance.AddListener(EventName, HandlerMethod);`
+- In OnDisable(), unsubscribe from event
+    - For example: `EventManager.Instance.RemoveListener(EventName, HandlerMethod);`
