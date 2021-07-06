@@ -6,25 +6,25 @@ using UnityEngine.Assertions;
 
 namespace EGS
 {
-/// <summary>
-/// Event to be called when a player is removed.
-/// </summary>
-public static class PlayerRemovedEvent
-{
-	// Event handler delegate
-	public static event EventHandler<EventArgs> PlayerRemovedEventHandler;
-	// Getter
-	public static EventHandler<EventArgs> GetEventHandler()
-	{
-		return PlayerRemovedEventHandler;
-	}
-}
+    /// <summary>
+    /// Event to be called when a player is removed.
+    /// </summary>
+    public static class PlayerRemovedEvent
+    {
+        // Event handler delegate
+        public static event EventHandler<EventArgs> PlayerRemovedEventHandler;
+        // Getter
+        public static EventHandler<EventArgs> GetEventHandler()
+        {
+            return PlayerRemovedEventHandler;
+        }
+    }
 
-/// <summary>
-/// The arguments for a PlayerRemovedEvent.
-/// </summary>
-public class PlayerRemovedEventArgs : EventArgs 
-{
-    // No arguments
-}
+    /// <summary>
+    /// The arguments for a PlayerRemovedEvent.
+    /// </summary>
+    public class PlayerRemovedEventArgs : EventArgs
+    {
+        // No arguments
+    }
 }

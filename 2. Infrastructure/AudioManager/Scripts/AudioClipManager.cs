@@ -13,25 +13,25 @@ namespace EGS
     public class AudioClipManager
     {
         //TODO: Change this to be serializable class that allows for inputing clips in editor
-        //=========================================================================
+        //=====================================================================
         #region Instance variables
-        //=========================================================================
+        //=====================================================================
         private Dictionary<MusicClipName, AudioClip[]> _musicClips = new Dictionary<MusicClipName, AudioClip[]>();
         private Dictionary<EventClipName, AudioClip> _eventClips = new Dictionary<EventClipName, AudioClip>();
         private Dictionary<AmbientClipName, AudioClip[]> _ambientClips = new Dictionary<AmbientClipName, AudioClip[]>();
         private Dictionary<SFXClipName, AudioClip> _sfxClips = new Dictionary<SFXClipName, AudioClip>();
         #endregion
-        //=========================================================================
+        //=====================================================================
         #region Constructor
-        //=========================================================================
+        //=====================================================================
         public AudioClipManager()
         {
             Initialize();
         }
         #endregion
-        //=========================================================================
+        //=====================================================================
         #region Audio Clip Retrieval
-        //=========================================================================
+        //=====================================================================
         /// <summary>
         /// Retrieves the audio clips associated with a music clip name enum.
         /// </summary>
@@ -69,9 +69,9 @@ namespace EGS
             return _sfxClips[clipName];
         }
         #endregion
-        //=========================================================================
+        //=====================================================================
         #region Initialization
-        //=========================================================================
+        //=====================================================================
         public void Initialize()
         {
             InitializeMusicClips();
@@ -82,7 +82,7 @@ namespace EGS
         private void InitializeMusicClips()
         {
             //TODO: Populate
-            _musicClips.Add(MusicClipName.SOS, 
+            _musicClips.Add(MusicClipName.SOS,
                 GenerateAudioClipPair(Resources.Load<AudioClip>("Audio/Debug/SOS"), Resources.Load<AudioClip>("Audio/Debug/SOS")));
             _musicClips.Add(MusicClipName.SwordShovelsCave,
                 GenerateAudioClipPair(Resources.Load<AudioClip>("Audio/Temp/Music/SwordsShovels-Cave"), Resources.Load<AudioClip>("Audio/Temp/Music/SwordsShovels-Cave_Aux")));
@@ -123,7 +123,7 @@ namespace EGS
             _sfxClips.Add(SFXClipName.GrenadeExplosion, Resources.Load<AudioClip>("Audio/SFX/sampleExplode"));
             Debug.Log("AudioClipManager.InitializeSFXClips loaded sfx audio clips successfully.");
         }
-        
+
         private AudioClip[] GenerateAudioClipPair(AudioClip mainClip, AudioClip auxClip)
         {
             return new AudioClip[2] { mainClip, auxClip };

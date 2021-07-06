@@ -7,7 +7,7 @@ namespace EGS
     /// <summary>
     /// This script is used to inhibit rotation of an object. Particuarly,
     /// it inhits the rotation of a child object in the case that the parent
-    /// is rotated. This script is used to prevent entity sprites from 
+    /// is rotated. This script is used to prevent entity sprites from
     /// rotating.
     /// </summary>
     public class FixRotation : MonoBehaviour
@@ -45,4 +45,4 @@ namespace EGS
 
 
 
-     
+

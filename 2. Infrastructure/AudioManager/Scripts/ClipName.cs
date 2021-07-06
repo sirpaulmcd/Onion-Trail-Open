@@ -8,7 +8,7 @@
         //TODO: Populate
         SOS,
         SwordShovelsCave,
-        Scifi        
+        Scifi
     }
     /// <summary>
     /// Enumeration of all event audioclips within the game.

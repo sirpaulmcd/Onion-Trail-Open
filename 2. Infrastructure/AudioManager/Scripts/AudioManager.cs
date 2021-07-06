@@ -12,15 +12,15 @@ namespace EGS
     public class AudioManager : Singleton<AudioManager> //TODO: Should extend singleton
     {
         //TODO: Implement the gamestate handling
-        //=========================================================================
+        //=====================================================================
         #region Instance variables
-        //=========================================================================
+        //=====================================================================
         private AudioClipManager _audioClipManager;
         #endregion
 
-        //=========================================================================
+        //=====================================================================
         #region MonoBehaviour
-        //=========================================================================
+        //=====================================================================
         private void OnEnable()
         {
             RegisterAsListener();
@@ -31,9 +31,10 @@ namespace EGS
             DeregisterAsListener();
         }
         #endregion
-        //=========================================================================
+
+        //=====================================================================
         #region Debug and Testing         //TODO: Remove this. This is only for testing purposes.
-        //=========================================================================
+        //=====================================================================
         public bool MusicAuxIn, MusicIn, MusicOut, AmbienceAuxIn, AmbienceIn, AmbienceOut, Event, SFX, ChangeTrack, LoadAmbience, LoadTrack;
         public void HandleDebug()
         {
@@ -95,9 +96,10 @@ namespace EGS
             }
         }
         #endregion
-        //=========================================================================
-        #region Event listeners
-        //=========================================================================
+
+        //=====================================================================
+        #region Event handlers
+        //=====================================================================
         private void RegisterAsListener()
         {
             EventManager.Instance.AddListener(EventName.GameStateUpdatedEvent, HandleGameStateUpdatedEvent);
@@ -110,7 +112,7 @@ namespace EGS
 
         private void HandleGameStateUpdatedEvent(object invoker, System.EventArgs e)
         {
-            GameStateUpdatedEventArgs args = (GameStateUpdatedEventArgs) e;
+            GameStateUpdatedEventArgs args = (GameStateUpdatedEventArgs)e;
             if (args.NewState == GameManager.GameState.PAUSED)
             {
                 // TODO update audio when game paused
@@ -118,9 +120,9 @@ namespace EGS
         }
         #endregion
 
-        //=========================================================================
+        //=====================================================================
         #region Music and Event audio
-        //=========================================================================
+        //=====================================================================
         [SerializeField] private AudioSource _musicAudioSource = default, _musicAuxAudioSource = default, _eventAudioSource = default;
         [SerializeField] private AudioMixerSnapshot _musicOutSnapshot = default, _musicInSnapshot = default, _musicAuxInSnapshot = default, _eventSnapshot = default;
         private bool _eventRunning = false, _musicAuxIn = false;
@@ -218,9 +220,10 @@ namespace EGS
             _eventAudioSource.clip = eventClip;
         }
         #endregion
-        //=========================================================================
+
+        //=====================================================================
         #region Ambient audio
-        //=========================================================================
+        //=====================================================================
         [SerializeField] private AudioSource _ambientAudioSource = default, _ambientAuxAudioSource = default;
         [SerializeField] private AudioMixerSnapshot _ambientOutSnapshot = default, _ambientInSnapshot = default, _ambientAuxInSnapshot = default;
         /// <summary>
@@ -271,9 +274,10 @@ namespace EGS
             }
         }
         #endregion
-        //=========================================================================
+
+        //=====================================================================
         #region SFX audio
-        //=========================================================================
+        //=====================================================================
         [SerializeField] private AudioSource _sfxAudioSource = default;
         /// <summary>
         /// Plays a single shot of the SFX at a specific volume.
@@ -284,9 +288,10 @@ namespace EGS
             _sfxAudioSource.PlayOneShot(_audioClipManager.GetSFXClip(clipName), volumeScale);
         }
         #endregion
-        //=========================================================================
+
+        //=====================================================================
         #region MonoBehavior
-        //=========================================================================
+        //=====================================================================
         private void Start()
         {
             Init();
@@ -298,9 +303,10 @@ namespace EGS
             HandleDebug();
         }
         #endregion
-        //=========================================================================
+
+        //=====================================================================
         #region Initialization
-        //=========================================================================
+        //=====================================================================
         private void Init()
         {
             _audioClipManager = new AudioClipManager();
